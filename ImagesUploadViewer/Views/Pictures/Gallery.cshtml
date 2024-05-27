@@ -1,0 +1,179 @@
+﻿@model ImagesUploadViewer.ViewModels.PicturesViewModel
+
+@addTagHelper *, ImagesUploadViewer
+
+@{
+    ViewData["Title"] = "Gallery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="gallerytitle">@ViewData["Title"]</h1>
+<div class="container">
+    <div class="row content">
+        <div class="col-12 col-md-12 col-lg-3 picturedesc mr-4">
+            <img class="blurred_image" src="~/img/template.png" alt="..." />
+            <div class="row no-gutters">
+                <div class="col-12 cover">
+                    <div class="cover_wrap">
+                        <div class="cover_download">
+                            <a href="#" class="cover_download_full" download>
+                                <i class="fa fa-download fa-3x" aria-hidden="true"></i>
+                            </a>
+                            
+                            <a href="#" target="_blank" rel="noopener noreferrer" class="cover_show_full">
+                                <i class="fa fa-search-plus fa-3x" aria-hidden="true"></i>
+                            </a>
+                            
+                        </div>
+                        <img src="~/img/template.png" alt="" class="cover_image" />
+
+                    </div>
+                </div>
+                <div class="col-12 description">
+                    <div class="row picture_info">
+                        <div class="col-md-12">
+                            <div class="filename_wrap">
+                                <div class="filename_title noselect">Filename</div>
+                                <div class="filename_content">-</div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="filesize_wrap">
+                                <div class="filesize_title noselect">Filesize (byte)</div>
+                                <div class="filesize_content">-</div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="loadedat_wrap">
+                                <div class="loadedat_title noselect">Date</div>
+                                <div class="loadedat_content">-</div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="loadetime_wrap">
+                                <div class="loadetime_title noselect">Time</div>
+                                <div class="loadetime_content">-</div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="filepath_wrap">
+                                <div class="filepath_title noselect">Filepath</div>
+                                <div class="filepath_content">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 col-lg-8 picturegallery">
+            <div class="row">
+                <span class="col-12 filename">FileName</span>
+                <span class="col-12 fileextension">FileExtension</span>
+                <div class="col-12 picturelist">
+                    <div class="row">
+                        <div class="col-12 search align-content-center">
+                            <div class="row">
+                                <div class="col-3 col-md-3 search_icon_wrap">
+                                    <i class="fa fa-search search_icon"></i>
+                                </div>
+                                <div class="col-5 col-md-9 pl-0">
+                                    <form id="searchForm" class="text-nowrap">
+                                        <input class="search_input" type="text" name="searchPattern" placeholder="Search..." />
+                                        <button type="submit" class="browse_button">Browse</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 pictures_list_outer">
+                            <div class="row pictures_list_wrap">
+                                <partial name="_PagePartialView" model="Model" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function handleLinkClick(event) {
+                if (!$(this).attr('href') || $(this).attr('href') == '#') {
+                    event.preventDefault();
+                }
+            }
+
+            $('.cover_download_full').on('click', handleLinkClick);
+            $('.cover_show_full').on('click', handleLinkClick);
+            $(window).on('resize', function () {
+                var coverImageWidth = $('.cover_image').width();
+                var coverImageHeight = $('.cover_image').height();
+
+                $('.blurred_image').css({
+                    'width': coverImageWidth,
+                    'height': coverImageHeight
+                });
+            }).trigger('resize');
+            $('.pictures_list_wrap').on('click', '.picture_card', function () {
+                // * Дістанемо дані про файл
+                var picId = this.id.split('_').pop();
+                $.ajax({
+                    url: "@(Url.Action("GetPictureData", "Pictures"))",
+                    type: 'POST',
+                    data: { id: picId },
+                    dataType: "json",
+                    success: function(data) {
+                        $('.filename').text(data.filename);
+                        $('.fileextension').text(data.fileext);
+
+                        var localDateTime = new Date(data.loadedat + 'Z');
+                        var localDate = localDateTime.toLocaleDateString();
+                        var options = { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                        var localTime = localDateTime.toLocaleTimeString('en-US', options);
+
+                        $('.picturedesc .filename_content').text(data.filename);
+                        $('.picturedesc .filepath_content').text(data.filepath);
+                        $('.picturedesc .filesize_content').text(data.filesize);
+                        $('.picturedesc .loadedat_content').text(localDate);
+                        $('.picturedesc .loadetime_content').text(localTime);
+                        $('.cover_image').attr('src', data.filepath);
+
+                        $('.blurred_image').attr('src', data.filepath);
+
+                        $('.cover_show_full').attr('href', data.filepath);
+                        $('.cover_download_full').attr('href', data.filepath);
+                        $('.cover_download_full').attr('download', data.filename);
+                    }
+                });
+            });
+            $(document).on('click', '.pagination a[data-ajax="true"]', function (event) {
+                event.preventDefault();
+                var url = $(this).attr('href');
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (data) {
+                        $('.pictures_list_wrap').html(data);
+                    }
+                });
+            });
+            $('#searchForm').submit(function (event) {
+                event.preventDefault();
+                var searchPattern = $(this).find('input[name="searchPattern"]').val();
+                $.ajax({
+                    url: '@(Url.Action("Gallery", "Pictures"))',
+                    type: 'GET',
+                    data: { searchPattern: searchPattern },
+                    success: function (data) {
+                        $('.pictures_list_wrap').html(data);
+                    }
+                });
+            });
+        });
+
+    </script>
+} 

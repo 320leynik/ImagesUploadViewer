@@ -1,0 +1,31 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using System.IO
+@model ImagesUploadViewer.ViewModels.PicturesViewModel
+@addTagHelper *, ImagesUploadViewer
+
+<div class="col-12 align-content-center">
+    <page-link page-model="Model.Paginator" page-action="Gallery"></page-link>
+</div>
+
+@foreach (var item in Model.Pictures)
+{
+    <div class="col-12">
+        <div class="row picture_card" id="picture_@item.Id">
+            <div class="col-3 col-md-3 picture_card_preview_wrap pl-0">
+                <img src="@Html.DisplayFor(modelItem => item.FilePath)" alt="..." class="picture_card_preview img-fluid" />
+            </div>
+            <div class="col-5 col-md-9 d-flex align-items-center pl-0">
+                <div class="picture_card_name_wrap text-nowrap">
+                    <p class="picture_card_name mb-0">@Html.DisplayFor(modelItem => item.Filename)</p>
+                    <p class="picture_card_extension mb-0">@System.IO.Path.GetExtension(item.FilePath)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@{
+}

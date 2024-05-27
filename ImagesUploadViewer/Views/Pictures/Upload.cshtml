@@ -1,0 +1,90 @@
+﻿@model ImagesUploadViewer.Models.Picture
+
+@{
+    ViewData["Title"] = "Upload";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container upload_container">
+    <div class="row">
+        <div class="col-12 upload_title">
+            <h1>@ViewData["Title"]</h1>
+        </div>
+        <div class="col-12 upload_content">
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-4 upload_image_content">
+
+                    <div class="upload_image_wrap" onclick="document.getElementById('uploadFile1').click();">
+                        <img id="imagePreview" src="~/img/upload.png" alt="Image" class="upload_image" />
+                    </div>
+                </div>
+                <div class="col-12 col-md-12 col-lg-8">
+                    <form asp-action="Upload" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-group">
+                            <label asp-for="Filename" class="control-label"></label>
+                            <input id="filePreview" asp-for="Filename" class="form-control" maxlength="25" />
+                            <input id="extensionPreview" class="form-control" disabled />
+                            <span asp-validation-for="Filename" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Filesize" class="control-label"></label>
+                            <input id="sizePreview" asp-for="Filesize" class="form-control" disabled />
+                            <input id="sizeNPreview" class="form-control" disabled />
+                            <span asp-validation-for="Filesize" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <input asp-for="FilePath" id="uploadFile1" class="form-control d-none" type="file" name="uploadFile" />
+                            <span asp-validation-for="FilePath" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Upload" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            $('#uploadFile1').change(function (event) {
+                var file = event.target.files[0];
+                if (file) {
+                    var name = file.name.replace(/\.[^/.]+$/, "");
+                    if (name.length > 25) {
+                        name = name.substring(0, 25);
+                    }
+
+                    var ext = file.name.split('.').pop();
+                    var size = file.size;
+
+                    // Щоб вивело додатково або у КБ або у МБ
+                    var sizeInKb = size / 1024;
+                    if (sizeInKb > 1024) {
+                        $('#sizeNPreview').val(`${(sizeInKb / 1024).toFixed(2)} MB`);
+                    } else {
+                        $('#sizeNPreview').val(`${(sizeInKb.toFixed(2))} KB`);
+                    }
+
+                    $('#filePreview').val(name);
+                    $('#extensionPreview').val(ext);
+                    $('#sizePreview').val(size);
+
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#imagePreview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+}

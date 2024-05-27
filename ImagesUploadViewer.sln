@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34902.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImagesUploadViewer", "ImagesUploadViewer\ImagesUploadViewer.csproj", "{BEE79F90-DCDA-4C73-89F0-144FB3D9C157}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BEE79F90-DCDA-4C73-89F0-144FB3D9C157}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEE79F90-DCDA-4C73-89F0-144FB3D9C157}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEE79F90-DCDA-4C73-89F0-144FB3D9C157}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEE79F90-DCDA-4C73-89F0-144FB3D9C157}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C670CFE-3ED0-43AF-9072-7905608E8CF8}
+	EndGlobalSection
+EndGlobal
